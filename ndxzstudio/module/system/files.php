@@ -458,7 +458,7 @@ function getTimeOffset($default='', $name, $attr='')
 	{
 		$hello = date('Y-m-d H:i:s', mktime($time[0]+$a, $time[1], $time[2], $time[4], $time[3], $time[5]));
 		
-		$newdate = strftime("%A, %R %p", strtotime($hello));
+		$newdate = date("G:i", strtotime($hello));
 		
 		($default == $a) ? $sl = "selected ": $sl = "";
 		$s .= option($a, $newdate, $default, $a);
@@ -539,6 +539,7 @@ function get_section_type($state, $name, $attr)
 
 	$s = option(0, $OBJ->lang->word('default'), $state, 0);
 	$s .= option(1, $OBJ->lang->word('chronological'), $state, 1);
+	$s .= option(3, $OBJ->lang->word('tags'), $state, 3);
 	
 	return select($name, $attr, $s);	
 }
@@ -548,7 +549,7 @@ function get_section_type_name($input)
 {
 	$OBJ =& get_instance();
 
-	$temp = array(0 => 'default', 1 => 'chronological');
+	$temp = array(0 => 'default', 1 => 'chronological', 3 => 'tags');
 	
 	foreach ($temp as $key => $do)
 	{
@@ -679,8 +680,8 @@ function getSections()
 	$input = label($OBJ->lang->word('section name') . ' ' . span($OBJ->lang->word('required'), "class='small-txt'")) . input('sec_desc', 'text', "maxlength='35'", NULL);
 	$input .= label($OBJ->lang->word('folder name') . ' ' . span($OBJ->lang->word('required'), "class='small-txt'")) . input('section', 'text', "maxlength='25'", NULL);
 
-	$input .= ($default['subdir'] == true) ? getSectionPrepend(null, 'sec_prepend', null) : 
-		input('sec_prepend', 'hidden', NULL, '/');
+	//$input .= ($default['subdir'] == true) ? getSectionPrepend(null, 'sec_prepend', null) : 
+	//	input('sec_prepend', 'hidden', NULL, '/');
 
 	//$input .= input('hsec_ord', 'hidden', NULL, $num);
 	//$input .= div(input('add_sec', 'submit', NULL, $OBJ->lang->word('add section')), "style='text-align: right;'");
@@ -709,7 +710,7 @@ function getThemes($path, $default)
 		{
 			while (($module = readdir($fp)) !== false) 
 			{
-				if ((!preg_match("/^_/i",$module)) && (!preg_match("/^CVS$/i",$module)) && (!preg_match("/.php$/i",$module)) && (!preg_match("/.html$/i",$module)) && (!preg_match("/.DS_Store/i",$module)) && (!preg_match("/\./i",$module)) && (!preg_match("/plugin/i", $module)) && (!preg_match("/css/i", $module)) && (!preg_match("/js/i", $module)) && (!preg_match("/img/i", $module)) && (!preg_match("/cache/i", $module)) && (!preg_match("/config/i", $module)))
+				if ((!preg_match("/^_/i",$module)) && (!preg_match("/^CVS$/i",$module)) && (!preg_match("/.php$/i",$module)) && (!preg_match("/.html$/i",$module)) && (!preg_match("/.DS_Store/i",$module)) && (!preg_match("/\./i",$module)) && (!preg_match("/plugin/i", $module)) && (!preg_match("/css/i", $module)) && (!preg_match("/js/i", $module)) && (!preg_match("/img/i", $module)) && (!preg_match("/cache/i", $module)) && (!preg_match("/config/i", $module)) && (!preg_match("/mobile/i", $module)))
 				{      
 					$modules[] = $module;
 				}
@@ -859,7 +860,7 @@ function the_templates($path, $format='', $default)
  
 	sort($modules);
 		
-	$s = '';
+	$s = [];
 	foreach ($modules as $module)
 	{
 		//$search = array('.php');

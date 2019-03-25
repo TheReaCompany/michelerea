@@ -7,21 +7,20 @@ class System extends Router
 	public $tabs		= array();
 	public $reset		= false;
 
-	public function System()
+	public function __construct()
 	{
-		parent::Router();
+		parent::__construct();
 		
 		// library of $_POST options
 		$this->submits = array('upd_user', 'upd_settings', 'add_sec',
 			'edit_sec', 'del_sec', 'upd_profile', 'upd_jxs', 'upd_ord', 'upd_jxtag',
 			'clear_cache', 'upd_jxcode', 'upd_img', 'upd_tsettings', 'upd_backup', 'upd_jxbackup',
-			'upd_options', 'add_user', 'upd_user', 'del_user', 'deact_user', 'send_login',
+			'upd_options', 'add_user', 'upd_user', 'del_user', 'deact_user', 'sendlogin',
 			'add_alt', 'upd_alt', 'del_alt', 'upd_plugins_edit', 'clear_dimgs', 'upd_prefs', 'abstract',
 			'upd_format_edit', 'upd_theme', 'del_tag', 'merge_tag', 'edit_tag', 'upd_jxs_opt');
 			
 		$this->tabs = $this->default['system_admin'];
 	}
-	
 	
 	public function _submit()
 	{
@@ -400,15 +399,9 @@ class System extends Router
 		
 		// ++++++++++++++++++++++++++++++++++++++++++++++++++++
 		
-		$complete = '';
+		$x = (isset($_GET['x'])) ? $_GET['x'] : '';
 		
-		// a bit messy here
-		if (isset($_GET['x']))
-		{
-			$complete = ($_GET['x'] == 'complete') ? 'complete' : '';
-		}
-		
-		if ($complete != 'complete')
+		if ($x != 'complete')
 		{
 			$files = array();
 
@@ -427,33 +420,35 @@ class System extends Router
 
 				closedir($fp);
 			}
+			
+			//array_multisort($files, SORT_DESC, SORT_STRING);
 		
 			if (!empty($files))
 			{
 				foreach ($files as $file)
 				{
 					$ver = str_replace(array('v', '.php'), array('', ''), $file);
-					
-					// do we need to solidify this?
-					if (str_replace('.', '', VERSION) <= str_replace('.', '', $ver))
+				
+					if (VERSION <= $ver)
 					{
 						// include the file
 						if (file_exists(DIRNAME . '/ndxzstudio/upgrade/' . $file))
 						{
 							require_once(DIRNAME . '/ndxzstudio/upgrade/' . $file);
 							$upgrade = 'upgrade_' . str_replace('.', '', $ver);
-							$TMP = new $upgrade();
+							$TMP = new $upgrade;
 							$TMP->upgrade();
-							$version = $TMP->version;
+							//$messages[] = $TMP->messages;
 						}
 					}
 				}
 			
 				// update settings with last version
-				$this->db->updateArray(PX.'settings', array('version' => $version), "adm_id = '1'");
+				//$this->db->updateArray(PX.'settings', array('version' => $ver), "adm_id = '1'");
 			
-				// we need to make a better message here
+				// need a system redirect here...
 				system_redirect("?a=$go[a]&q=upgrade&x=complete");
+				exit;
 			}
 		}
 
@@ -2002,7 +1997,6 @@ var baseurl = '" . BASEURL . "';";
 		
 		// this is where we display subdirectories if they exist
 		// enable later
-		/*
 		if ($rs['sec_proj'] == 0)
 		{
 			// second column
@@ -2027,7 +2021,6 @@ var baseurl = '" . BASEURL . "';";
 			//$body .= "<div class='cl'><!-- --></div>\n";
 			//$body .= "</div>";
 		}
-		*/
 		
 		$body .= "<div class='cl'><!-- --></div>\n";
 		$body .= "</div>";
@@ -2924,6 +2917,7 @@ var baseurl = '" . BASEURL . "';";
 	
 	public function page_extensions_enable()
 	{
+		$OBJ =& get_instance();
 		global $go;
 
 		if ($this->access->is_admin() == false) { system_redirect("?a=$go[a]"); }
@@ -2964,8 +2958,7 @@ var baseurl = '" . BASEURL . "';";
 					$p['pl_file'] = $key;
 					
 					// we really need this?
-					$p = array_map('mysql_real_escape_string', $p);
-					
+					//$p = array_map('mysql_real_escape_string', $p);
 					$last = $this->db->insertArray(PX.'plugins', $p);
 					
 					// if primary has options
@@ -3055,9 +3048,9 @@ var baseurl = '" . BASEURL . "';";
 				$p['pl_options_build'] = $plugin['options'];
 					
 				// we really need this?
-				$p = array_map('mysql_real_escape_string', $p);
+				//$p = array_map('mysqli_real_escape_string', $p);
 					
-				$last = $this->db->insertArray(PX.'plugins', $p);
+				$last = $this->db->insertArray(PX.'plugins', $p); 
 			}
 		}
 
@@ -3123,15 +3116,15 @@ var baseurl = '" . BASEURL . "';";
 				$p['pl_desc'] = $plugin['description'];
 				$p['pl_options_build'] = $plugin['options'];
 					
-				// look into why this was put here...
-				$p = array_map('mysql_real_escape_string', $p);
+				// we really need this?
+				$p = array_map('mysqli_real_escape_string', $p);
 					
 				$last = $this->db->insertArray(PX.'plugins', $p);
-				}
 			}
+		}
 
-			system_redirect("?a=$go[a]&q=$go[q]&x=tagedit&id=$last");
-			exit;
+		system_redirect("?a=$go[a]&q=$go[q]&x=tagedit&id=$last");
+		exit;
 	}
 	
 	
@@ -4758,6 +4751,7 @@ var ide = '$go[id]';";
 
 	public function sbmt_add_sec()
 	{
+		$OBJ =& get_instance();
 		$OBJ->template->errors = TRUE;
 		global $go;
 		
@@ -4783,6 +4777,7 @@ var ide = '$go[id]';";
 			// a few more things
 			$clean['sec_date'] 	= getNow();
 			$clean['sec_ord']	= $temp['hsec_ord'] + 1;
+			$clean['sec_obj']	= 'exhibits';
 			
 			// we need to romanize the path based upon 'section'
 			load_helpers( array('output', 'romanize') );
@@ -4792,8 +4787,6 @@ var ide = '$go[id]';";
 			
 			// we need to clean up the path thing
 			$clean['sec_path'] = $folder_name->urlStrip($temp['sec_prepend'] . '/' . $clean['section']);
-			
-			//echo $clean['sec_path']; exit;
 			
 			$last = $this->db->insertArray(PX.'sections', $clean);
 			
@@ -4837,7 +4830,7 @@ var ide = '$go[id]';";
 		$temp['sec_prepend'] = $processor->process('sec_prepend', array('notags'));
 		
 		// this needs to update the objects table as well
-		//$clean['sec_obj'] = $processor->process('sec_obj', array('notags', 'reqnotempty'));
+		$clean['sec_obj'] = $processor->process('sec_obj', array('notags', 'reqnotempty'));
 
 		if ($processor->check_errors())
 		{
@@ -4880,7 +4873,7 @@ var ide = '$go[id]';";
 			// we need to update the page url
 			// we need to check for duplicates again? oi vey...
 			$new['url'] = $folder_name->urlStrip($clean['sec_path'] . '/');
-			//$new['object'] = $clean['sec_obj'];
+			$new['object'] = $clean['sec_obj'];
 			
 			$this->db->updateArray(PX.'objects', $new, "obj_ref_id = '$go[id]' AND section_top = '1'");
 			
@@ -6306,18 +6299,9 @@ var ide = '$go[id]';";
 		
 		load_module_helper('files', $go['a']);
 		
-		// ++++++++++++++++++++++++++++++++++++++++++++++++++++
-		// reset user ones settings
-		if ($go['id'] == 1)
-		{
-			$clean['user_admin'] = 1;
-			$clean['user_active'] = 1;
-			$this->db->updateArray(PX.'users', $clean, "ID='1'");
-		}
-		// remove this with the next version...
-		// ++++++++++++++++++++++++++++++++++++++++++++++++++++
-		
 		$rs = $this->db->fetchRecord("SELECT * FROM ".PX."users WHERE ID=" . $go['id'] . "");
+		
+		// ++++++++++++++++++++++++++++++++++++++++++++++++++++
 		
 		$b .= $this->toggler();
 		
@@ -6344,19 +6328,11 @@ var ide = '$go[id]';";
 		$b .= ips($this->lang->word('user last name'), 'input', 'user_surname', $rs['user_surname'], "maxlength='50'", 'text', $this->lang->word('required'),'req');
 		$b .= ips($this->lang->word('user email'), 'input', 'email', $rs['email'], "maxlength='100'", 'text', $this->lang->word('required'),'req');
 		$b .= ips($this->lang->word('user id'), 'input', 'userid', $rs['userid'], "maxlength='50'", 'text', $this->lang->word('required'),'req');
-		
-		if (($rs['ID'] != 1) || ($this->access->prefs['ID'] != $rs['ID']))
-		{
-			$b .= ips($this->lang->word('user active'), 'getGeneric', 'user_active', $rs['user_active']);
-		}
+		$b .= ips($this->lang->word('user active'), 'getGeneric', 'user_active', $rs['user_active']);
 		
 		if ($rs['ID'] != 1)
 		{
 			$b .= ips($this->lang->word('admin status'), 'getGeneric', 'user_admin', $rs['user_admin']);
-		}
-		else
-		{
-			$b .= input('user_admin', 'hidden', null, $rs['user_admin']);
 		}
 		
 		// when the email and login are set a password can be sent
@@ -6364,7 +6340,7 @@ var ide = '$go[id]';";
 		{
 			if (($rs['email'] != '') && ($rs['userid'] != ''))
 			{
-				$b .= input('send_login', 'button', "onclick=\"transmit($go[id]); return false;\"", $this->lang->word('transmit login info')) . ' ';
+				$b .= input('sendlogin', 'button', "onclick=\"transmit($go[id]); return false;\"", $this->lang->word('transmit login info')) . ' ';
 			}
 		}
 
@@ -6472,27 +6448,21 @@ var ide = '$go[id]';";
 	}
 	
 
-	public function sbmt_send_login()
+	public function sbmt_sendlogin()
 	{
 		global $go;
-		
+
 		$id = (int) $_POST['id'];
-		
+
 		// make password
 		$temp['password'] = $this->createRandomPassword();
 		$clean['password'] = md5($temp['password']);
-		
+
 		// get user info
 		$rs = $this->db->fetchRecord("SELECT * FROM ".PX."users WHERE ID='$id'");
-		
+
 		// update password
 		if ($rs) $this->db->updateArray(PX.'users', $clean, "ID='$id'");
-		
-		$MAIL =& load_class('mail', true, 'lib');
-		
-		$MAIL->setRecipients($rs['user_name'] . ' ' . $rs['user_surname'], $rs['email'], 
-			$this->access->prefs['user_name'] . ' ' . $this->access->prefs['user_surname'], 
-			$this->access->prefs['email']);
 
 		#produce message in html format 
 		$body = "Your password was updated.\n\n";
@@ -6501,21 +6471,28 @@ var ide = '$go[id]';";
 		$body .= "Password: $temp[password]\n\n";
 		$body .= "URL: " . BASEURL . "/ndxzstudio/";
 
-		#build the message with the message title and message content 
-		$MAIL->buildMessage('Password Update', $body);
+		$mail =& load_class('mail', true, 'lib');
 
-		#build and send the email 
-		if($MAIL->sendmail()) 
+		$mail->setTo($rs['email'], 'From your website');
+		$mail->setSubject('Indexhibit Password Reset');
+		$mail->setMessage($body);
+		$mail->addMailHeader('Reply-To', 'noreply@indexhibit.org', 'indexhibit.org');
+		$mail->addGenericHeader('X-Mailer', 'PHP/' . phpversion());
+		$mail->addGenericHeader('Content-Type', 'text/html; charset="utf-8"');
+		$mail->setWrap(100);
+
+		$mail->send();
+
+		if($rs) 
 		{ 
-		    echo 'Message was sent. '; 
-			echo "User password is '$temp[password]'.";
+		   	echo 'Message was sent. '; 
+			echo "Temp password is '$temp[password]'.";
 		} 
 		else 
 		{ 
-		    echo 'Message was not sent - there was an error. '; 
-			echo "User password is '$temp[password]'.";
+			echo 'Message was not sent - there was an error. '; 
 		}
-		
+
 		exit;
 	}
 
@@ -6738,8 +6715,15 @@ var ide = '$go[id]';";
 		$t = the_templates(DIRNAME . '/ndxzsite/' . $this->access->settings['obj_theme'], '', 'index.php');
 		$li = '';
 		$body .= p(label($this->lang->word('template set') . ' ' . span('(' . $this->access->settings['obj_theme'] . ')')));
-		foreach ($t as $key => $te) $li .= li(href($te, "?a=$go[a]&q=assets&edit=/" . $this->access->settings['obj_theme'] . "/$te"));
-		$li .= li(href('error.php', "?a=$go[a]&q=assets&edit=/error.php"));
+		foreach ($t as $key => $te) 
+		{
+			// exclude php files
+			if (substr($te, -3) != 'php')
+			{
+				$li .= li(href($te, "?a=$go[a]&q=assets&edit=/" . $this->access->settings['obj_theme'] . "/$te"));
+			}
+		}
+		//$li .= li(href('error.php', "?a=$go[a]&q=assets&edit=/error.php"));
 		$body .= ul($li, "class='ndxz_files'");
 		$body .= "</div>\n\n";
 		
@@ -6753,6 +6737,7 @@ var ide = '$go[id]';";
 		//$body .= "</div>\n\n";
 		
 		// third column
+		/*
 		$body .= "<div style='margin-top: 50px;'><!-- --></div>\n";
 		$t = the_templates(DIRNAME . '/ndxzsite/js', 'js', 'index.php');
 		$li = '';
@@ -6760,8 +6745,10 @@ var ide = '$go[id]';";
 		foreach ($t as $key => $te) $li .= li(href($te, "?a=$go[a]&q=assets&edit=/js/$te"));
 		$body .= ul($li, "class='ndxz_files'");
 		$body .= "</div>\n\n";
+		*/
 		
 		// fourth column
+		/*
 		$body .= "<div class='col'>\n";
 		$t = the_templates(DIRNAME . '/ndxzsite/plugin', '', 'index.php');
 		$li = '';
@@ -6769,6 +6756,7 @@ var ide = '$go[id]';";
 		foreach ($t as $key => $te) $li .= li(href($te, "?a=$go[a]&q=assets&edit=/plugin/$te"));
 		$body .= ul($li, "class='ndxz_files'");
 		$body .= "</div>\n\n";
+		*/
 		
 		$body .= "<div class='cl'><!-- --></div>\n";
 		$body .= "</div>";
@@ -6800,16 +6788,17 @@ var ide = '$go[id]';";
 		// validate get
 		$type = explode('.', $_GET['edit']);
 		$format = array_pop($type);
+
+		if ($format != 'css') { system_redirect("?a=$go[a]&q=assets"); }
 		
 		// get the stuff
 		$template = (file_exists(DIRNAME . '/ndxzsite' . $_GET['edit'])) ? $_GET['edit'] : false;
 		
 		if ($template == false) { echo 'Woops!'; exit; }
 		
-		// try to force the permissions?
-		//chmod(DIRNAME . '/ndxzsite' . $_GET['edit'], 777);
-		
-		if (is_writable(DIRNAME . '/ndxzsite' . $_GET['edit'])) 
+		// need to restrict which folders we can access
+		// disallow php & js editing
+		if (($format == 'css') && (is_writable(DIRNAME . '/ndxzsite' . $_GET['edit'])))
 		{
 			$filename = DIRNAME . '/ndxzsite' . $template;
 			$fp = @fopen($filename, 'r');
@@ -6846,7 +6835,6 @@ var ide = '$go[id]';";
 		else
 		{
 			// we'll just show the code...
-			
 			$filename = DIRNAME . '/ndxzsite' . $template;
 			$fp = @fopen($filename, 'r');
 			$contents = fread($fp, filesize($filename));

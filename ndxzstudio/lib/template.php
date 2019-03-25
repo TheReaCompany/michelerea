@@ -51,14 +51,13 @@ class Template
 	* @param void
 	* @return null
 	*/
-	public function Template()
+	public function __construct()
 	{
 		// default settings
 		$this->title = 'Indexhibit™';
 		$this->add_css('style.css');
 		$this->add_js('common.js');
 	}
-	
 	
 	public function tpl_update_available()
 	{

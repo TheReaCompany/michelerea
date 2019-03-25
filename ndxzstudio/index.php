@@ -5,9 +5,10 @@
 // -----------------------------------------------------------
 
 // hide errors for the live site
-//error_reporting(0);
+error_reporting(0);
 
-ob_start('ob_gzhandler');
+// because we are backwards compatible
+ini_set('display_errors', 'Off');
 
 // the basics
 if (file_exists('../ndxzsite/config/config.php')) require_once '../ndxzsite/config/config.php';
@@ -59,7 +60,7 @@ if ($OBJ->hook->registered_hook('update_module')) $OBJ->extend_module($OBJ->hook
 // pretunnel hooks
 
 // goto the module method. submits happen here too.
-$OBJ->tunnel($OBJ->$go['a'], $OBJ->go['a'], $OBJ->go['q']);
+$OBJ->tunnel($OBJ->go['a'], $OBJ->go['a'], $OBJ->go['q']);
 
 // output
 header('Content-Type: text/html; charset=utf-8'); 

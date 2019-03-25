@@ -15,8 +15,8 @@
 $words = array 
 (
 	"indexhibit" => "Indexhibit",
-	"exhibit" => "Exibit",
-	"index" => "Index",
+	"exhibit" => "Exposição",
+	"index" => "Índice",
 	"admin" => "Administração",
 	"preferences" => "Preferências",
 	"help" => "Ajuda",

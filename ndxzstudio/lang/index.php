@@ -82,8 +82,6 @@ class Lang
 			'fi-fi' => array('fi_FI.UTF-8', 'fi_FI', 'fin', 'fi', 'finnish', 'fi_FI.ISO_8859-1', 'Finnish'),
 			'fr-fr' => array('fr_FR.UTF-8', 'fr_FR', 'fra', 'fre', 'fr', 'french', 'fr_FR.ISO_8859-1', 'Français'),
 			'ja-jp' => array('ja_JP.UTF-8', 'ja_JP', 'ja', 'jpn', 'japanese', 'ja_JP.ISO_8859-1', '日本語'),
-			'ko-ko' => array('ko_KO.UTF-8', 'ko_KO', 'ko', 'kor', 'korean', 'ko_KO.ISO_8859-1', '한국의'),
-			'tr-tr' => array('tr_TR.UTF-8', 'tr_TR', 'tr', 'trk', 'turkish', 'tr_TR.ISO_8859-1', 'Türkçe'),
 			'pt-pt' => array('pt_PT.UTF-8', 'pt_PT', 'por', 'portuguese', 'pt_PT.ISO_8859-1', 'Portuguese'),
 			'ru-ru' => array('ru_RU.UTF-8', 'ru_RU', 'ru', 'rus', 'russian', 'ru_RU.ISO8859-5', 'Русский'),
 			'de-de' => array('de_DE.UTF-8', 'de_DE', 'de', 'deu', 'german', 'de_DE.ISO_8859-1', 'Deutsch'),

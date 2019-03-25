@@ -17,7 +17,7 @@ class Cache
 	public $defaults = array();
 	public $ext;
 	
-	public function Cache()
+	public function __construct()
 	{
 		global $default;
 
@@ -41,8 +41,11 @@ class Cache
 		if ((!empty($_GET)) || (!empty($_POST))) $this->defaults['caching'] = false;
 
 		///if ($this->defaults['caching'] != true) return false;
+		
+		// what about mobile - prefix file name
+		$prefix = $this->if_mobile();
 
-		$this->uri = DIRNAME . '/ndxzsite/cache/' . md5($uri) . '.php';
+		$this->uri = DIRNAME . '/ndxzsite/cache/' . md5($prefix . $uri) . '.php';
 		
 		// if cached 'true'
 		if ($this->page_cached($this->uri) == true)
@@ -59,6 +62,15 @@ class Cache
 	{
 		return (file_exists($this->uri)) ? true : false;
 	}
+	
+	public function if_mobile()
+	{
+		$OBJ =& get_instance();
+		
+		$prefix = ($OBJ->vars->default['isMobile'] == true) ? 'mobile' : '';
+		
+		return $prefix;
+	}
 
 	public function makeCache($url, $content, $allowed=true)
 	{
@@ -68,9 +80,13 @@ class Cache
 		if ($content == '') return;
 		if ($allowed == false) return;
 		
-		if ($OBJ->vars->exhibit['page_cache'] == true)
+		// what about mobile - prefix file name
+		$prefix = $this->if_mobile();
+		
+		// do not cache is page is protected
+		if ($OBJ->page->protected == false)
 		{
-			$filename = md5($url) . '.php';
+			$filename = md5($prefix . $url) . '.php';
 
 			if (!$handle = fopen(DIRNAME . '/ndxzsite/cache/' . $filename, 'w+')) 
 			{
@@ -80,8 +96,6 @@ class Cache
 			// add an expiration date/time to file
 			if (is_dir(DIRNAME . '/ndxzsite/cache/') && is_writable(DIRNAME . '/ndxzsite/cache/')) 
 			{
-				// use file_put_contents instead?
-
 				if (fwrite($handle, $content) === FALSE) 
 				{  
 					// error note

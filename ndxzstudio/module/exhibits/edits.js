@@ -753,8 +753,6 @@ function create_exhibit(state)
 	var year = (state == 'exhibit') ? $('select#ajx-year').val() : '2011';
 	var link = (state == 'exhibit') ? '' : $('input#link').val();
 	
-	if ((state != 'exhibit') && (link == '')) { alert('Can not be empty.'); return false; }
-	
 	if ((title == '') || (section == '') || (year == ''))
 	{
 		alert('Can not be empty.');
@@ -762,8 +760,6 @@ function create_exhibit(state)
 	}
 	else
 	{
-		//link = (state == 'exhibit') ? '' : $('input#link').val();
-		
 		// save it up
 		$.post('?a='+action, { upd_jxs : 'true', x : 'create', st : state, l : link, t : title, s : section, y : year }, 
 			function(html) {

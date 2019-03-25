@@ -4,7 +4,7 @@
 ini_set("magic_quotes_runtime", 0);
 
 // version
-define('VERSION', '2.0.1');
+define('VERSION', '2.1.5');
 	
 // Paths/definitions of things (relative to index file)
 define('LIBPATH', 'lib');
@@ -29,15 +29,14 @@ define('DIRNAME', str_replace(BASENAME, '', $adjust));
 
 // let's make our root path
 $self = '';
-//$protocol   = (empty($_SERVER['HTTPS'])) ? 'http' : 'https';
-$protocol   = 'http';
+$protocol   = (empty($_SERVER['HTTPS'])) ? 'http' : 'https';
 $servername = $_SERVER['SERVER_NAME'];
 $serverport = ($_SERVER['SERVER_PORT'] == '80') ? '' : ':' . $_SERVER['SERVER_PORT'];
 
 $path = dirname($_SERVER["SCRIPT_NAME"]);
-$path = str_replace('\\', '/', $path); // helps with windows
 $path = str_replace('/ndxzstudio', '', $path);
 $base = $protocol . '://' . preg_replace('/\/+/', '/', $servername . $serverport . $path);
+$base = str_replace(':443', '', $base);
 define('BASEURL', preg_replace("/\/$/i", '', $base)); // no trailing slashes
 
 // Add default types for files, images and movies upload
@@ -58,10 +57,10 @@ $medias = array_merge($default['images'], $default['media'], $default['flash'], 
 $default['medias'] = array_merge($default['images'], $default['media'], $default['flash'], $default['services']);
 
 // kinds of sections
-$default['section_types'] = array(0 => 'default', 1 => 'chronological');
+$default['section_types'] = array(0 => 'default', 1 => 'chronological', 3 => 'tags');
 
 // this drives the tabs in system/admin
-$default['system_admin'] = array('theme', 'formats', 'plugins', 'assets', 'spacer', 'settings', 'sections', 'tag', 'spacer', 'statistics', 'spacer', 'users');
+$default['system_admin'] = array('theme', 'formats', 'plugins', 'spacer', 'settings', 'sections', 'assets', 'tag', 'spacer', 'statistics', 'spacer', 'users');
 
 // files sources
 $default['filesource'] = array('exhibit', 'all', 'section', 'subsection', 'tag');

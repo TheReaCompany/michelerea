@@ -19,7 +19,7 @@ class Subdirs
 	public $singleSub = array();
 	public $id;
 	
-	public function Subdirs()
+	public function __construct()
 	{
 
 	}

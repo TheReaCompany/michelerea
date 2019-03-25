@@ -16,9 +16,9 @@ class Exhibits extends Router
 	public $enable_linker = true;
 	public $enable_bg = false;
 	
-	public function Exhibits()
+	public function __construct()
 	{
-		parent::Router();
+		parent::__construct();
 		
 		// which object are we accessing?
 		define('OBJECT', 'exhibits');
@@ -32,7 +32,7 @@ class Exhibits extends Router
 			'upd_section', 'upd_cbox', 'upd_delete', 'unpublish_x',
 			'del_bg_img', 'bg_img_upload', 'upd_jxs', 'upd_img', 'upd_jxdelimg',
 			'upd_jxtext');
-	}	
+	}
 	
 	public function _submit()
 	{
@@ -303,24 +303,31 @@ var baseurl = '" . BASEURL . "';";
 			$body .= "<div style='border-top: 1px dotted #ccc;'>&nbsp;</div>\n\n";
 			
 			// exhibit tags - maybe we'll bring this back later...
-			/*
 			if ($this->vars->site['tags'] == 1)
-			{	
+			{
+				//$body .= "<div style='width:350px; float:left;'>\n";
+				// tags
 				$this->lib_class('tag');
-				//$this->tag->active_tags = $rs['tags'];
-				
-				// this kind of sucks
-				$this->template->ex_css[] = "#tag-box span { cursor: default; }";
-				
-				$body .= "<div class='as-holder'>\n";
-				$body .= "<label>Tags</label><br />\n";
-				$body .= "<div id='tag-box' style='display:block; padding:6px 0 0 0;'>\n";
+				$this->tag->method = 'exh';
 				$this->tag->id = $rs['id'];
-				$body .= div($this->tag->show_active_tags2(), "id='tag-holder'");
+				$this->tag->active_tags = $rs['tags'];
+
+				$body .= "<div>\n";
+				$body .= label($this->lang->word('tags') . ' ' . span(href($this->lang->word('add tags'), '#', "onclick=\"toggle('tag-add'); return false;\""))) . "\n";
+				$body .= "<div id='tag-add' style='display: none; cursor: pointer;'>\n";
+				$body .= input('add_tag', 'text', "id='new_tag' style='display: inline; width: 100px;'", null);
+				$body .= "<input type='hidden' name='tag_group' id='tag_group' value=\"1\" /> ";
+				$body .= input('new_tag', 'button', "style='display: inline;' onclick=\"add_tags('exh'); return false;\"", $this->lang->word('submit'));
+				$body .= input('new_tag', 'button', "style='display: inline;' onclick=\"$('#tag-add').toggle(); return false;\"", $this->lang->word('cancel'));
+				$body .= "<p>" . $this->lang->word('Separate multiple tags with a comma') . " ','.</p>\n";
 				$body .= "</div>\n";
+				//$body .= "</div>\n";
+
+				$body .= "<div id='tag-box' style='display:block; padding:6px 0;'>\n";
+				$body .= div($this->tag->get_active_tags2(), "id='tag-holder'");
 				$body .= "</div>\n";
 			}
-			*/
+			// end tags
 			
 			// additional options - miscellaneous
 			$tmp = $this->hook->do_action('system_additional_link');	
@@ -2200,10 +2207,10 @@ var ide = '$go[id]';";
 			{
 				$clean['link'] = $_POST['l'];
 				$clean['title'] = $_POST['t'];
-				$clean['content'] = "<plugin:ndxz_iframed {{link}} />";
 				// how to validate this?
 				$clean['section_id'] = $_POST['s'];
 				$q = 'link';
+				$clean['content'] = "<plugin:ndxz_iframed {{link}} />";
 			}
 			
 			// check for subsection

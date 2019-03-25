@@ -207,12 +207,10 @@ class Parse_default
 		
 		$arg_list = func_get_args();
 
-		//$tmp_func = explode(':', $arg_list[0]['function']);
-		$tmp_func = explode(':', $arg_list[0][1]);
+		$tmp_func = explode(':', $arg_list[0]['function']);
 		$this->func = trim($tmp_func[0]);
 		$this->method = (isset($tmp_func[1])) ? $tmp_func[1] : '';
-		//$this->variables = (isset($arg_list[0]['variables'])) ? $arg_list[0]['variables'] : '';
-		$this->variables = (isset($arg_list[0][2])) ? $arg_list[0][2] : '';
+		$this->variables = (isset($arg_list[0]['variables'])) ? $arg_list[0]['variables'] : '';
 		
 		// make the variables
 		$args = explode(',', $this->variables);

@@ -22,9 +22,9 @@ class Editor
 	* @param void
 	* @return array
 	*/
-	public function Editor()
+	public function __construct()
 	{
-
+		
 	}
 	
 	public function output()

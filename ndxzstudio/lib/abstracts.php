@@ -12,6 +12,11 @@ class Abstracts
 	public $temp;
 	public $input = array();
 	
+	public function __construct()
+	{
+		
+	}
+	
 	/**
 	* Returns loaded abstracts object or false
 	* Only for exhibits/pages - images will be separate

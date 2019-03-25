@@ -52,7 +52,7 @@ class Media
 	* @param void
 	* @return mixed
 	*/
-	public function Media()
+	public function __construct()
 	{
 		global $default;
 		$this->uploads = $default;
@@ -289,7 +289,7 @@ class Media
 		$new_name 	= str_replace($thetype, 'gif', $source_name);
 
 		// Create a new image instance
-		$im = $this->do_create(800, 600);
+		$im = imagecreatetruecolor(800, 600);
 
 		// a neutral gray - we'll add a hook here later
 		imagefilledrectangle($im, 0, 0, 800, 600, 0x999999);
@@ -372,7 +372,7 @@ class Media
 			// get the new sizes
 			$this->resizing($this->maxsize);
 		
-			$output_image = $this->do_create($this->new_size['w'], $this->new_size['h']);
+			$output_image = imagecreatetruecolor($this->new_size['w'], $this->new_size['h']);
 
 			// resizing
 			@imagecopyresampled($output_image,  $this->input_image, 0, 0, 0, 0,
@@ -381,7 +381,7 @@ class Media
 		else
 		{
 			// copy the image and output it at the same size
-			$output_image = $this->do_create($this->size[0], $this->size[1]);
+			$output_image = imagecreatetruecolor($this->size[0], $this->size[1]);
 				
 			@imagecopy($output_image, $this->input_image, 0, 0, 0, 0, $this->size[0], $this->size[1]);
 		}
@@ -412,8 +412,8 @@ class Media
 		// get the new sizes
 		$this->cinematic($this->thumbsize);
 		
-		$output_image = $this->do_create($this->new_size['w'], $this->new_size['h']);
-		$imT = $this->do_create($the_width, $the_height);
+		$output_image = imagecreatetruecolor($this->new_size['w'], $this->new_size['h']);
+		$imT = imagecreatetruecolor($the_width, $the_height);
 		
 		// resizing
 		@imagecopyresampled($output_image,  $this->input_image, 0, 0, 
@@ -499,8 +499,8 @@ class Media
 		// this does a double check on things
 		$this->size4x3($this->thumbsize);
 		
-		$output_image = $this->do_create($this->new_size['w'], $this->new_size['h']);
-		$imT = $this->do_create($the_width, $the_height);
+		$output_image = imagecreatetruecolor($this->new_size['w'], $this->new_size['h']);
+		$imT = imagecreatetruecolor($the_width, $the_height);
 		
 		// resizing
 		@imagecopyresampled($output_image,  $this->input_image, 0, 0, 
@@ -567,8 +567,8 @@ class Media
 		// this does a double check on things
 		$this->size3x2($this->thumbsize);
 		
-		$output_image = $this->do_create($this->new_size['w'], $this->new_size['h']);
-		$imT = $this->do_create($the_width, $the_height);
+		$output_image = imagecreatetruecolor($this->new_size['w'], $this->new_size['h']);
+		$imT = imagecreatetruecolor($the_width, $the_height);
 		
 		// resizing
 		@imagecopyresampled($output_image,  $this->input_image, 0, 0, 
@@ -635,8 +635,8 @@ class Media
 		// this does a double check on things
 		$this->size3x4($this->thumbsize);
 		
-		$output_image = $this->do_create($this->new_size['w'], $this->new_size['h']);
-		$imT = $this->do_create($the_width, $the_height);
+		$output_image = imagecreatetruecolor($this->new_size['w'], $this->new_size['h']);
+		$imT = imagecreatetruecolor($the_width, $the_height);
 		
 		// resizing
 		@imagecopyresampled($output_image,  $this->input_image, 0, 0, 
@@ -695,8 +695,8 @@ class Media
 		// get the new sizes
 		$this->cinematic($this->thumbsize);
 		
-		$output_image = $this->do_create($this->new_size['w'], $this->new_size['h']);
-		$imT = $this->do_create(200, 113);
+		$output_image = imagecreatetruecolor($this->new_size['w'], $this->new_size['h']);
+		$imT = imagecreatetruecolor(200, 113);
 
 		// resizing
 		@imagecopyresampled($output_image,  $this->input_image, 0, 0, 
@@ -736,7 +736,7 @@ class Media
 		// get the new sizes
 		$this->resizing($this->thumbsize);
 		
-		$output_image = $this->do_create($this->new_size['w'], $this->new_size['h']);
+		$output_image = imagecreatetruecolor($this->new_size['w'], $this->new_size['h']);
 
 		// resizing
 		@imagecopyresampled($output_image, $this->input_image, 0, 0, 0, 0,
@@ -780,7 +780,7 @@ class Media
 	{
 		$this->square_resize();
 
-		$output_image = $this->do_create($this->thumbsize, $this->thumbsize);
+		$output_image = imagecreatetruecolor($this->thumbsize, $this->thumbsize);
 			
 		@imagecopyresampled($output_image, $this->input_image, 0, 0, 
 			$this->offset['w'], $this->offset['h'],
@@ -823,7 +823,7 @@ class Media
 		// get the new sizes
 		$this->resizing($default['systhumb']);
 		
-		$output_image = $this->do_create($this->new_size['w'], $this->new_size['h']);
+		$output_image = imagecreatetruecolor($this->new_size['w'], $this->new_size['h']);
 
 		// resizing
 		@imagecopyresampled($output_image,  $this->input_image, 0, 0, 0, 0,
@@ -852,7 +852,7 @@ class Media
 	{
 		$this->sys_resize();
 
-		$output_image = $this->do_create($this->sys_thumb, $this->sys_thumb);
+		$output_image = imagecreatetruecolor($this->sys_thumb, $this->sys_thumb);
 		
 		@imagecopyresampled($output_image, $this->input_image, 0, 0, 
 			$this->offset['w'], $this->offset['h'],
@@ -885,7 +885,7 @@ class Media
 	{
 		$this->square_resize();
 
-		$output_image = $this->do_create($this->thumbsize, $this->thumbsize);
+		$output_image = imagecreatetruecolor($this->thumbsize, $this->thumbsize);
 			
 		@imagecopyresampled($output_image, $this->input_image, 0, 0, 
 			$this->offset['w'], $this->offset['h'],
@@ -944,26 +944,6 @@ class Media
                 $this->input_image = imagecreatefrompng($this->image);
                 break;
         }
-	}
-	
-	/**
-	* Returns blank image data with support for transparency.
-	*
-	* @param int $width
-	* @param int $height
-	* @return image resource identifier
-	*/
-	public function do_create($width, $height)
-	{
-		$new_image = imagecreatetruecolor($width, $height);
-		if ($this->filemime == 'png' || $this->filemime == 'gif') {
-			@imagecolortransparent($new_image, @imagecolorallocate($new_image, 0, 0, 0));
-		}
-		if ($this->filemime == 'png') {
-			@imagealphablending($new_image, false);
-			@imagesavealpha($new_image, true);
-		}
-		return $new_image;
 	}
 
 	
